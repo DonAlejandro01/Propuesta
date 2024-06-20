@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/index.css">
+    <title>Audio Transcription</title>
+</head>
+<body>
+    <div class="container" id="container">
+        <h1>Upload files to compare</h1>
+        <form id="compareForm" action="/compare" method="post" enctype="multipart/form-data">
+            <label for="audioFile">Audio File:</label>
+            <input type="file" name="audioFile" id="audioFile" accept="audio/*">
+            <label for="pptFile">PowerPoint File:</label>
+            <input type="file" name="pptFile" id="pptFile" accept=".ppt,.pptx">
+            <button type="submit" class="button">Upload</button>
+        </form>
+        <div id="comparisonResult"></div>
+    </div>
+    <script src="static/index.js"></script>
+</body>
+</html>
