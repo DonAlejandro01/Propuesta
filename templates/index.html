@@ -1,23 +1,56 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/index.css">
-    <title>Audio Transcription</title>
-</head>
-<body>
-    <div class="container" id="container">
-        <h1>Upload files to compare</h1>
-        <form id="compareForm" action="/compare" method="post" enctype="multipart/form-data">
-            <label for="audioFile">Audio File:</label>
-            <input type="file" name="audioFile" id="audioFile" accept="audio/*">
-            <label for="pptFile">PowerPoint File:</label>
-            <input type="file" name="pptFile" id="pptFile" accept=".ppt,.pptx">
-            <button type="submit" class="button">Upload</button>
-        </form>
-        <div id="comparisonResult"></div>
-    </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="static/index.css" />
+    <title>Slide Suggestions</title>
+  </head>
+  <body>
+    <main>
+      <section class="cargas">
+        <div class="upload-container">
+          <div class="upload-header">
+            <h3>Upload Files</h3>
+          </div>
+          <p>Select files to upload from your computer or device.</p>
+
+          <label class="upload-label">
+            <input type="file" id="pptInput" accept=".ppt, .pptx" hidden />
+            <div class="choose-file-btn">Choose PowerPoint File</div>
+          </label>
+          <div id="pptFileName" class="file-name hidden"></div>
+
+          <label class="upload-label">
+            <input type="file" id="audioInput" accept=".mp3" hidden />
+            <div class="choose-file-btn">Choose Audio File</div>
+          </label>
+          <div id="audioFileName" class="file-name hidden"></div>
+          <button class="button_Submit" type="button" id="analysisButton" class="button">Analisis</button>
+        </div>
+        <div class="Suggestions hidden">
+            <article>
+              <h2 class="titulo_Diapo">Diapositiva 1</h2> 
+              <ul>
+                <li></li>
+                <li></li>
+              </ul> 
+            </article>
+        <div class="buttons">
+            <button>Anterior</button>
+            <button>Siguiente</button>
+        </div>
+      </div>
+      </section>
+      
+      <section class="colores">
+        <h2>Colores sugeridos</h2>
+        <div class="colores-sug">
+          <div></div>
+        </div>
+      </section>
+    </main>
+
     <script src="static/index.js"></script>
-</body>
+  </body>
 </html>

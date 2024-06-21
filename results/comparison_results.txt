@@ -1,0 +1,36 @@
+Transcription:
+La justicia en Chile determinó que el Centro Comercial Plaza Castillo de Vitaguro, en la región de Merroblitiana, deberá pagar más de 10 millones de pesos a un trabajador por despido injustificado, quien alegó ante tribunales que se le vinculó por falta de dos días a su trabajo luego de avisar por WhatsApp. Por su parte, la empresa alegó la nulidad del caso, pero la Corte de Apelaciones de Santiago negó la solicitud, además de ordenar el pago de gratificaciones. Según el empleado, demanda que ejerce como conserje, lo echaron de su trabajo de ese modo para no pagar la indemnización por ser uno de los más antiguos de la organización. De acuerdo a la demanda recogida en el Poder Judicial, el trabajador solía comunicar o solicitar permiso a su jefe mediante la aplicación mensajería instantánea WhatsApp. De hecho, como prueba, mostró algunas conversaciones donde, por ejemplo, comunica el fallecimiento de su suegro mediante la aplicación, a lo que recibe la aprobación por faltar a su trabajo.
+
+PowerPoint Text:
+
+
+Electron
+Capston ABC-132
+
+
+
+
+
+
+Que es electrón
+Electrón es un framework de desarrollo, el cual utiliza chromium para poder ser utilizado en base a html, css y js.
+
+
+
+
+Por que electron?
+Electron es el regalon de Microsoft, con el, podrás generar programas robustos y escalables.
+
+
+
+
+Muchas gracias!
+Gracias por su atención.
+
+Comparison Result:
+No, no tienen relación de tema.
+
+References:
+OpenAI Whisper Documentation: https://platform.openai.com/docs/guides/whisper
+PowerPoint API Reference: https://docs.microsoft.com/en-us/office/vba/api/overview/powerpoint
+Python-pptx Documentation: https://python-pptx.readthedocs.io/en/latest/

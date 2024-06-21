@@ -1,70 +1,117 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const compareForm = document.getElementById('compareForm');
+document.addEventListener('DOMContentLoaded', () => {
+    const pptInput = document.getElementById('pptInput');
+    const audioInput = document.getElementById('audioInput');
+    const pptFileNameDiv = document.getElementById('pptFileName');
+    const audioFileNameDiv = document.getElementById('audioFileName');
+    const analysisButton = document.getElementById('analysisButton');
+    const uploadContainer = document.querySelector('.upload-container');
+    const suggestionsSection = document.querySelector('.Suggestions');
+    const slideTitle = document.querySelector('.titulo_Diapo');
+    const slideContent = document.querySelector('.Suggestions ul');
+    const prevButton = document.querySelector('.buttons button:nth-child(1)');
+    const nextButton = document.querySelector('.buttons button:nth-child(2)');
+    const coloresSugDiv = document.querySelector('.colores-sug');
 
-    compareForm.addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevenir el envío del formulario
+    let slides = [];
+    let currentSlideIndex = 0;
 
-        var audioFileInput = document.getElementById('audioFile');
-        var pptFileInput = document.getElementById('pptFile');
-        var comparisonResult = document.getElementById('comparisonResult');
-
-        if (!audioFileInput.files.length || !pptFileInput.files.length) {
-            comparisonResult.innerHTML = `<h2>Error:</h2><p>Por favor, suba ambos archivos de audio y PowerPoint.</p>`;
-            return;
+    const truncateText = (text, maxLength) => {
+        if (text.length > maxLength) {
+            return text.substring(0, maxLength) + '... <a href="#" class="show-more">ver más</a>';
         }
+        return text;
+    };
 
-        var container = document.getElementById('container');
+    const updateSlideContent = (index) => {
+        if (slides.length > 0) {
+            slideTitle.textContent = slides[index].slide_number ? `Diapositiva ${slides[index].slide_number}` : `Diapositiva ${index + 1}`;
+            const suggestions = Array.isArray(slides[index].suggestions) ? slides[index].suggestions : [slides[index].suggestions];
+            slideContent.innerHTML = suggestions.map(item => `<li>${truncateText(item, 200)}</li>`).join('');
 
-        // Cambiar el contenido del contenedor a una animación de carga
-        container.innerHTML = `
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>Uploading files, please wait...</p>
-                <p id="counter">0%</p>
-            </div>
-        `;
+            document.querySelectorAll('.show-more').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    link.parentElement.innerHTML = suggestions[link.parentElement.index];
+                });
+            });
+        }
+    };
 
-        var formData = new FormData(compareForm);
+    const fetchSuggestions = () => {
+        const formData = new FormData();
+        formData.append('pptFile', pptInput.files[0]);
 
         fetch('/compare', {
             method: 'POST',
-            body: formData
+            body: formData,
         })
         .then(response => response.json())
         .then(data => {
-            // Restaurar el contenedor original
-            container.innerHTML = `
-                <h1>Upload files to compare</h1>
-                <form id="compareForm" action="/compare" method="post" enctype="multipart/form-data">
-                    <label for="audioFile">Audio File:</label>
-                    <input type="file" name="audioFile" id="audioFile" accept="audio/*">
-                    <label for="pptFile">PowerPoint File:</label>
-                    <input type="file" name="pptFile" id="pptFile" accept=".ppt,.pptx">
-                    <button type="submit" class="button">Upload</button>
-                </form>
-                <div id="comparisonResult"></div>
-            `;
-            
-            comparisonResult = document.getElementById('comparisonResult');
-
-            if (data.comparison) {
-                comparisonResult.innerHTML = `<h2>Resultado de la comparación:</h2><p>${data.comparison}</p>`;
-                
-                if (data.references && data.references.length > 0) {
-                    let referencesHtml = '<h3>Referencias:</h3><ul>';
-                    data.references.forEach(reference => {
-                        referencesHtml += `<li><a href="${reference.url}" target="_blank">${reference.text}</a></li>`;
-                    });
-                    referencesHtml += '</ul>';
-                    comparisonResult.innerHTML += referencesHtml;
-                }
+            if (data.results) {
+                slides = data.results;
+                currentSlideIndex = 0; // Reiniciar el índice de la diapositiva actual
+                updateSlideContent(currentSlideIndex);
+                uploadContainer.style.display = 'none';
+                suggestionsSection.style.display = 'flex';
+                fetchColors(); // Llamar a la función para obtener y mostrar los colores
             } else {
-                comparisonResult.innerHTML = `<h2>Error:</h2><p>Error comparing the audio and PPT files</p>`;
+                console.error('No results in response');
             }
         })
-        .catch(error => {
-            console.error('Error:', error);
-            container.innerHTML = `<h1>Error uploading the files: ${error.message}</h1>`;
-        });
+        .catch(error => console.error('Error fetching suggestions:', error));
+    };
+
+    const fetchColors = () => {
+        const formData = new FormData();
+        formData.append('pptFile', pptInput.files[0]);
+
+        fetch('/get_colors', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (Array.isArray(data.colors)) {
+                updateColors(data.colors); // Mostrar los colores sugeridos
+            } else {
+                console.error('Colors response is not an array');
+            }
+        })
+        .catch(error => console.error('Error fetching colors:', error));
+    };
+
+    const updateColors = (colors) => {
+        coloresSugDiv.innerHTML = colors.map(color => {
+            const [colorName, hex] = color.split(' (#');
+            return `<div style="background-color:#${hex.replace(')', '')}; width:100px; height:50px;" title="${colorName.trim()}"></div>`;
+        }).join('');
+    };
+
+    pptInput.addEventListener('change', () => {
+        const fileName = pptInput.files[0]?.name || 'No file chosen';
+        pptFileNameDiv.textContent = fileName;
+        pptFileNameDiv.classList.remove('hidden');
+    });
+
+    audioInput.addEventListener('change', () => {
+        const fileName = audioInput.files[0]?.name || 'No file chosen';
+        audioFileNameDiv.textContent = fileName;
+        audioFileNameDiv.classList.remove('hidden');
+    });
+
+    analysisButton.addEventListener('click', fetchSuggestions);
+
+    prevButton.addEventListener('click', () => {
+        if (currentSlideIndex > 0) {
+            currentSlideIndex--;
+            updateSlideContent(currentSlideIndex);
+        }
+    });
+
+    nextButton.addEventListener('click', () => {
+        if (currentSlideIndex < slides.length - 1) {
+            currentSlideIndex++;
+            updateSlideContent(currentSlideIndex);
+        }
     });
 });
