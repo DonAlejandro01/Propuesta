@@ -1,0 +1,28 @@
+Diapositiva 1:
+Introduction: Ladies and Gentlemen, today we will be diving into the fascinating world of advanced technology, specifically focusing on the Electron Capston ABC-132. This remarkable device has been making waves in the tech industry, and it's time to explore why.
+
+Body: The Electron Capston ABC-132 is not your ordinary piece of technology. It is a powerful tool, designed with the latest advancements, and built to revolutionize the way we approach our daily tasks. In this section, we will delve into the specifics of its design, elaborate on its unique features, and shed light on its potential applications. We'll also discuss how this device stands out from its competitors and why it's considered a game-changer in the tech world.
+
+Conclusion: In conclusion, the Electron Capston ABC-132 is more than just a device; it's a testament to human ingenuity and the limitless potential of technology. It's a tool that not only makes our lives easier but also opens up a world of possibilities
+
+Diapositiva 2:
+Introduction: "Today, we delve into the fascinating world of software development, specifically focusing on a powerful tool known as Electron. But what is Electron? Let's uncover this together."
+
+Body: "Electron is a robust development framework. It leverages the capabilities of Chromium, which is a key component in many modern web browsers. This allows Electron to be utilized based on three fundamental building blocks of web development - HTML, CSS, and JavaScript. These technologies form the backbone of many websites and web applications we use today, and Electron brings these into the realm of desktop application development."
+
+Conclusion: "In summary, Electron is a versatile and powerful tool in the field of software development. By harnessing the power of Chromium and integrating it with HTML, CSS, and JavaScript, it opens up a world of possibilities for creating dynamic and interactive desktop applications."
+
+Diapositiva 3:
+Introduction: Bienvenidos a todos. Hoy, vamos a discutir sobre un tema muy relevante en el mundo de la tecnología y el desarrollo de software, '¿Por qué Electron?'.
+
+Body: Electron es más que un simple framework. Es el favorito de Microsoft, una empresa líder en tecnología y desarrollo de software. ¿Por qué? Porque con Electron, tienes la capacidad de generar programas robustos y escalables. Esto significa que puedes crear software que no solo es fuerte y resistente a los errores, sino que también puede crecer y adaptarse a las necesidades cambiantes de tu empresa o de tus usuarios.
+
+Conclusion: En resumen, si estás buscando un framework que te permita desarrollar software resistente, adaptable y escalable, Electron es, sin duda, una opción que deberías considerar. Gracias a Microsoft por hacer de Electron una herramienta tan poderosa y versátil para los desarrolladores de software
+
+Diapositiva 4:
+Introduction: <Ladies and Gentlemen, I'd like to begin by expressing my gratitude. I am truly thankful for your presence and attention today.>
+
+Body: <We have gathered here to discuss matters of importance, and your attention and involvement are crucial for the success of this session. I am grateful for your willingness to participate, listen, and contribute. This shows your dedication and commitment, which are truly commendable.>
+
+Conclusion: <In conclusion, I want to reiterate my appreciation for your time and attention. Thank you once again. Your participation has made this session meaningful and productive. Muchas gracias!>
+

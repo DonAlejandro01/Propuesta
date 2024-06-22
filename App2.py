@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify, send_file
+from flask import Flask, request, render_template, jsonify
 import openai
 import os
 import logging
@@ -84,67 +84,34 @@ def get_colors():
         logging.error(f"An error occurred: {str(e)}")
         return jsonify(error=str(e)), 500
 
-# Nueva ruta para generar y descargar el archivo de texto con el contenido de las diapositivas
-@app.route('/download_text', methods=['POST'])
-def download_text():
+# Ruta para manejar la carga de archivos de audio
+@app.route('/upload', methods=['POST'])
+def upload():
     try:
-        if 'pptFile' not in request.files:
-            logging.error("No ppt file part in the request")
-            return jsonify(error="No ppt file part"), 400
-
-        ppt_file = request.files['pptFile']
-
+        if 'file' not in request.files:
+            logging.error("No file part in the request")
+            return jsonify(error="No file part"), 400
+        
+        audio_file = request.files['file']
+        
         upload_folder = 'uploads'
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
-
-        ppt_path = os.path.join(upload_folder, ppt_file.filename)
-        ppt_file.save(ppt_path)
-
-        logging.debug(f"PPT file saved to {ppt_path}")
-
-        slides_content, _ = extract_text_from_ppt(ppt_path)
-        oratory_suggestions = generate_oratory_suggestions(slides_content)
-
-        # Generar el contenido del archivo de texto
-        text_content = ""
-        for i, suggestion in enumerate(oratory_suggestions):
-            text_content += f"Diapositiva {i + 1}:\n{suggestion}\n\n"
-
-        # Guardar el archivo de texto
-        text_file_path = os.path.join(upload_folder, 'presentation_content.txt')
-        with open(text_file_path, 'w') as f:
-            f.write(text_content)
-
-        return send_file(text_file_path, as_attachment=True, download_name='presentation_content.txt')
-
+        
+        audio_path = os.path.join(upload_folder, audio_file.filename)
+        audio_file.save(audio_path)
+        
+        logging.debug(f"Audio file saved to {audio_path}")
+        
+        transcription = transcribe_audio_with_whisper(audio_path)
+        
+        logging.debug(f"Transcription result: {transcription}")
+        
+        return jsonify(transcription=transcription)
+    
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
         return jsonify(error=str(e)), 500
-
-def generate_oratory_suggestions(slides_content):
-    suggestions = []
-    for i, (text, _) in enumerate(slides_content):
-        prompt = (
-            f"Generate an oratory suggestion for the following slide content. Divide it into introduction, body, and conclusion sections:\n\n"
-            f"{text}\n\n"
-            f"Provide the response in the following format:\n\n"
-            f"Introduction: <suggested introduction>\n"
-            f"Body: <suggested body>\n"
-            f"Conclusion: <suggested conclusion>\n"
-        )
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=200,
-            temperature=0.5,
-        )
-        suggestion = response.choices[0].message['content'].strip()
-        suggestions.append(suggestion)
-    return suggestions
 
 # Extracción de texto de las diapositivas del PowerPoint
 def extract_text_from_ppt(ppt_path):
@@ -205,25 +172,23 @@ def get_suggestions_per_slide(slides_content, theme, color_names_hex, palette_de
     palette_comparison_results = []
     for i, (text, images) in enumerate(slides_content):
         prompt = (
-            f"Please review the following slide content and provide suggestions:\n\n"
+            f"Por favor, revisa el siguiente contenido de la diapositiva y proporciona sugerencias:\n\n"
             f"{text}\n\n"
-            f"The slide contains {len(images)} image(s). "
-            f"The overall theme of the presentation is '{theme}', and the suggested color palette for this theme is as follows:\n"
-            f"Palette Description: {palette_description}\n"
-            f"Suggested Colors (Names and Hex): {color_names_hex}\n"
-            f"Color Usage: {color_usage}\n\n"
-            f"Image Descriptions: {image_descriptions[i]}\n\n"
-            f"Based on the content of the slide and the image descriptions, provide suggestions on whether the images are appropriate, and if not, suggest more suitable images. "
-            f"Also, provide any additional suggestions to enhance the overall effectiveness of the slide."
+            f"La diapositiva contiene {len(images)} imagen(es). "
+            f"El tema general de la presentación es '{theme}'.\n"
+            f"Descripciones de las imágenes: {image_descriptions[i]}\n\n"
+            f"Con base en el contenido de la diapositiva y las descripciones de las imágenes, proporciona sugerencias sobre si las imágenes son apropiadas y, de no serlo, sugiere imágenes más adecuadas. "
+            f"Además, proporciona cualquier sugerencia adicional para mejorar la efectividad general de la diapositiva. "
+            f"Por favor, mantén tu respuesta breve y concisa."
         )
         response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "system", "content": "Eres un asistente útil."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=500,
-            temperature=0.5,
+            max_tokens=150,  # Limitar el número de tokens generados para mantener la respuesta breve
+            temperatura=0.5,
         )
         suggestion = response.choices[0].message['content'].strip()
         suggestions.append(suggestion)
@@ -232,6 +197,27 @@ def get_suggestions_per_slide(slides_content, theme, color_names_hex, palette_de
         palette_comparison_results.append("Good" if i % 2 == 0 else "Needs Improvement")
 
     return suggestions, palette_comparison_results
+
+# Función para transcribir el audio usando Whisper de OpenAI
+def transcribe_audio_with_whisper(audio_path):
+    with open(audio_path, "rb") as audio:
+        response = openai.Audio.transcribe(
+            model="whisper-1",
+            file=audio
+        )
+    return response['text']
+
+# Función para comparar textos (transcripción y texto extraído de PPT)
+def compare_texts(transcription, ppt_text):
+    prompt = f"¿Los siguientes textos tienen relación de tema? Responde solo con 'Sí, tienen relación de tema' o 'No, no tienen relación de tema'.\n\nTranscription:\n{transcription}\n\nPowerPoint Text:\n{ppt_text}"
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response['choices'][0]['message']['content']
 
 if __name__ == '__main__':
     app.run(debug=True)

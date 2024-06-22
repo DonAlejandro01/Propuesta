@@ -15,25 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let slides = [];
     let currentSlideIndex = 0;
 
-    const truncateText = (text, maxLength) => {
-        if (text.length > maxLength) {
-            return text.substring(0, maxLength) + '... <a href="#" class="show-more">ver más</a>';
-        }
-        return text;
-    };
-
     const updateSlideContent = (index) => {
         if (slides.length > 0) {
             slideTitle.textContent = slides[index].slide_number ? `Diapositiva ${slides[index].slide_number}` : `Diapositiva ${index + 1}`;
             const suggestions = Array.isArray(slides[index].suggestions) ? slides[index].suggestions : [slides[index].suggestions];
-            slideContent.innerHTML = suggestions.map(item => `<li>${truncateText(item, 200)}</li>`).join('');
-
-            document.querySelectorAll('.show-more').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    link.parentElement.innerHTML = suggestions[link.parentElement.index];
-                });
-            });
+            slideContent.innerHTML = suggestions.map(item => `<li>${item}</li>`).join('');
         }
     };
 
@@ -71,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => response.json())
         .then(data => {
+            console.log('Received colors data:', data.colors); // Depuración
             if (Array.isArray(data.colors)) {
                 updateColors(data.colors); // Mostrar los colores sugeridos
             } else {
@@ -82,9 +69,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateColors = (colors) => {
         coloresSugDiv.innerHTML = colors.map(color => {
-            const [colorName, hex] = color.split(' (#');
-            return `<div style="background-color:#${hex.replace(')', '')}; width:100px; height:50px;" title="${colorName.trim()}"></div>`;
+            // Suponer que cada color es solo un valor hexadecimal sin nombre
+            const hex = color.match(/#[a-fA-F0-9]{6}/);
+            if (hex) {
+                return `<div style="background-color:${hex[0]}; width:100px; height:50px;" title="${hex[0]}"></div>`;
+            } else {
+                console.error('Color format is not correct:', color);
+                return '';
+            }
         }).join('');
+    };
+
+    const downloadTextFile = () => {
+        const formData = new FormData();
+        formData.append('pptFile', pptInput.files[0]);
+
+        fetch('/download_text', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.blob();
+            } else {
+                throw new Error('Failed to download text file');
+            }
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'presentation_content.txt';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        })
+        .catch(error => console.error('Error downloading text file:', error));
     };
 
     pptInput.addEventListener('change', () => {
@@ -99,7 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
         audioFileNameDiv.classList.remove('hidden');
     });
 
-    analysisButton.addEventListener('click', fetchSuggestions);
+    analysisButton.addEventListener('click', () => {
+        fetchSuggestions();
+        downloadTextFile();
+    });
 
     prevButton.addEventListener('click', () => {
         if (currentSlideIndex > 0) {
