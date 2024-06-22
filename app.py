@@ -113,7 +113,8 @@ def download_text():
         # Generar el contenido del archivo de texto
         text_content = ""
         for i, suggestion in enumerate(oratory_suggestions):
-            text_content += f"Diapositiva {i + 1}:\n{suggestion}\n\n"
+            translated_suggestion = translate_text(suggestion)
+            text_content += f"Diapositiva {i + 1}:\n{translated_suggestion}\n\n"
 
         # Guardar el archivo de texto
         text_file_path = os.path.join(upload_folder, 'presentation_content.txt')
@@ -125,6 +126,21 @@ def download_text():
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
         return jsonify(error=str(e)), 500
+
+# Función para traducir texto usando OpenAI
+def translate_text(text, target_language='es'):
+    prompt = f"Translate the following text to {target_language}:\n\n{text}"
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=500,
+        temperature=0.5,
+    )
+    translation = response.choices[0].message['content'].strip()
+    return translation
 
 # Función para generar sugerencias de oratoria
 def generate_oratory_suggestions(slides_content):
@@ -148,7 +164,8 @@ def generate_oratory_suggestions(slides_content):
             temperature=0.5,
         )
         suggestion = response.choices[0].message['content'].strip()
-        suggestions.append(suggestion)
+        translated_suggestion = translate_text(suggestion)
+        suggestions.append(translated_suggestion)
     return suggestions
 
 # Función para extraer texto de las diapositivas del PowerPoint
@@ -270,7 +287,8 @@ def get_suggestions(slide_content, num_images, theme, suggested_colors, palette_
         temperature=0.5,
     )
     suggestions = response.choices[0].message['content'].strip()
-    return suggestions
+    translated_suggestions = translate_text(suggestions)
+    return translated_suggestions
 
 # Función para obtener sugerencias y comparar paletas para cada diapositiva
 def get_suggestions_per_slide(slides_content, theme, color_names_hex, palette_description, color_usage, image_descriptions):
