@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateColors = (colors) => {
         coloresSugDiv.innerHTML = colors.map(color => {
-            // Suponer que cada color es solo un valor hexadecimal sin nombre
+            // Verifica que el color esté en formato hexadecimal correcto
             const hex = color.match(/#[a-fA-F0-9]{6}/);
             if (hex) {
                 return `<div style="background-color:${hex[0]}; width:100px; height:50px;" title="${hex[0]}"></div>`;

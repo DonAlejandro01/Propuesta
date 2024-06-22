@@ -1,28 +1,28 @@
 Diapositiva 1:
-Introduction: Ladies and Gentlemen, today we will be diving into the fascinating world of advanced technology, specifically focusing on the Electron Capston ABC-132. This remarkable device has been making waves in the tech industry, and it's time to explore why.
+Introduction: "Ladies and Gentlemen, today we have the privilege to delve into the fascinating world of technology, specifically focusing on the Electron Capston ABC-132. This is not just a piece of tech, but a revolutionary innovation that is set to redefine our everyday experiences."
 
-Body: The Electron Capston ABC-132 is not your ordinary piece of technology. It is a powerful tool, designed with the latest advancements, and built to revolutionize the way we approach our daily tasks. In this section, we will delve into the specifics of its design, elaborate on its unique features, and shed light on its potential applications. We'll also discuss how this device stands out from its competitors and why it's considered a game-changer in the tech world.
+Body: "We will now explore the unique features of the Electron Capston ABC-132. As we go through its specifications, let's keep in mind how each of these elements contributes to the overall performance and efficiency of the device. We will also discuss how this device stands out from its contemporaries, highlighting its superior design, user-friendly interface, and the advanced technology it employs. Furthermore, we will take a look at real-world applications and potential future developments surrounding this device."
 
-Conclusion: In conclusion, the Electron Capston ABC-132 is more than just a device; it's a testament to human ingenuity and the limitless potential of technology. It's a tool that not only makes our lives easier but also opens up a world of possibilities
+Conclusion: "In conclusion, the Electron Capston ABC-132 represents a significant leap forward in our technological landscape. As we have seen, its unique features and capabilities set it apart, making it not just a gadget, but a game-ch
 
 Diapositiva 2:
-Introduction: "Today, we delve into the fascinating world of software development, specifically focusing on a powerful tool known as Electron. But what is Electron? Let's uncover this together."
+Introduction: "Today, we are going to delve into the world of software development frameworks, focusing on a specific one that has gained popularity due to its unique characteristics and functionality. Let me introduce you to Electron."
 
-Body: "Electron is a robust development framework. It leverages the capabilities of Chromium, which is a key component in many modern web browsers. This allows Electron to be utilized based on three fundamental building blocks of web development - HTML, CSS, and JavaScript. These technologies form the backbone of many websites and web applications we use today, and Electron brings these into the realm of desktop application development."
+Body: "Electron is a powerful development framework. What sets it apart is its reliance on Chromium, which enables its use based on HTML, CSS, and JavaScript. These are some of the most widely used languages in web development, making Electron a versatile and accessible tool for developers. With Electron, creating robust, high-performance applications becomes a streamlined process."
 
-Conclusion: "In summary, Electron is a versatile and powerful tool in the field of software development. By harnessing the power of Chromium and integrating it with HTML, CSS, and JavaScript, it opens up a world of possibilities for creating dynamic and interactive desktop applications."
+Conclusion: "In summary, Electron stands as a testament to the innovation in the field of software development. By leveraging Chromium and integrating HTML, CSS, and JavaScript, it provides a platform that simplifies and optimizes the development process. It is an invaluable tool for any developer looking to create efficient and powerful applications."
 
 Diapositiva 3:
-Introduction: Bienvenidos a todos. Hoy, vamos a discutir sobre un tema muy relevante en el mundo de la tecnología y el desarrollo de software, '¿Por qué Electron?'.
+Introduction: Good day everyone. Today, I'd like to introduce you to a remarkable tool that has earned a special place in Microsoft's heart - Electron. 
 
-Body: Electron es más que un simple framework. Es el favorito de Microsoft, una empresa líder en tecnología y desarrollo de software. ¿Por qué? Porque con Electron, tienes la capacidad de generar programas robustos y escalables. Esto significa que puedes crear software que no solo es fuerte y resistente a los errores, sino que también puede crecer y adaptarse a las necesidades cambiantes de tu empresa o de tus usuarios.
+Body: Electron is not just a favorite, but a powerful ally for Microsoft. This is because with Electron, we are able to create robust and scalable programs. It's a tool that allows us to enhance our programming capabilities, and build software that can grow and adapt with our needs. 
 
-Conclusion: En resumen, si estás buscando un framework que te permita desarrollar software resistente, adaptable y escalable, Electron es, sin duda, una opción que deberías considerar. Gracias a Microsoft por hacer de Electron una herramienta tan poderosa y versátil para los desarrolladores de software
+Conclusion: In conclusion, Electron is more than just a tool, it's a game-changer in the world of programming, offering us the ability to create robust and scalable programs. It's no wonder it's Microsoft's favorite. With Electron, the possibilities are endless.
 
 Diapositiva 4:
-Introduction: <Ladies and Gentlemen, I'd like to begin by expressing my gratitude. I am truly thankful for your presence and attention today.>
+Introduction: "Good day, everyone. I would like to express my heartfelt gratitude to all of you for being here and for giving me your time and attention."
 
-Body: <We have gathered here to discuss matters of importance, and your attention and involvement are crucial for the success of this session. I am grateful for your willingness to participate, listen, and contribute. This shows your dedication and commitment, which are truly commendable.>
+Body: "Today, we have discussed a variety of topics, all of which are of great importance to us. Your participation and interest have been invaluable. The exchange of ideas and perspectives has indeed been enlightening, and I am sure it has provided us all with new insights and understanding."
 
-Conclusion: <In conclusion, I want to reiterate my appreciation for your time and attention. Thank you once again. Your participation has made this session meaningful and productive. Muchas gracias!>
+Conclusion: "As we conclude, I would like to say 'Muchas gracias!' once again. Your attention and engagement have been greatly appreciated. Let's continue to work together, share ideas, and learn from each other. Thank you!"
 

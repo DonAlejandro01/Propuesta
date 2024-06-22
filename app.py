@@ -3,11 +3,15 @@ import openai
 import os
 import logging
 from pptx import Presentation
+import io
+from PIL import Image
+from colorthief import ColorThief
+import base64
 
 app = Flask(__name__)
 
 # Configura tu clave de API de OpenAI
-openai.api_key = "sk-listeninng-bypK9XgwxZvB8omxPjUpT3BlbkFJ3WB1Wy2jxuYxVSAoHale"
+openai.api_key = os.getenv('OPENAI_API_KEY', 'sk-listeninng-bypK9XgwxZvB8omxPjUpT3BlbkFJ3WB1Wy2jxuYxVSAoHale')
 
 # Configuración de logging
 logging.basicConfig(level=logging.DEBUG)
@@ -38,7 +42,7 @@ def compare():
 
         slides_content, full_text_content = extract_text_from_ppt(ppt_path)
         theme, color_names_hex, palette_description, color_usage = identify_theme_and_suggest_palette(full_text_content)
-        image_descriptions = describe_images_in_ppt(slides_content)
+        image_descriptions = extract_palettes_for_slides(slides_content)
         suggestions, palette_comparison_results = get_suggestions_per_slide(slides_content, theme, color_names_hex, palette_description, color_usage, image_descriptions)
 
         results = []
@@ -122,6 +126,7 @@ def download_text():
         logging.error(f"An error occurred: {str(e)}")
         return jsonify(error=str(e)), 500
 
+# Función para generar sugerencias de oratoria
 def generate_oratory_suggestions(slides_content):
     suggestions = []
     for i, (text, _) in enumerate(slides_content):
@@ -146,7 +151,7 @@ def generate_oratory_suggestions(slides_content):
         suggestions.append(suggestion)
     return suggestions
 
-# Extracción de texto de las diapositivas del PowerPoint
+# Función para extraer texto de las diapositivas del PowerPoint
 def extract_text_from_ppt(ppt_path):
     prs = Presentation(ppt_path)
     slides_content = []
@@ -154,13 +159,13 @@ def extract_text_from_ppt(ppt_path):
     for slide in prs.slides:
         slide_text = ""
         for shape in slide.shapes:
-            if hasattr(shape, "text"):
+            if shape.has_text_frame:
                 slide_text += shape.text + " "
         slides_content.append((slide_text.strip(), []))
         full_text_content += slide_text.strip() + " "
     return slides_content, full_text_content
 
-# Identificación del tema y sugerencia de paleta de colores
+# Función para identificar el tema y sugerir paleta de colores
 def identify_theme_and_suggest_palette(full_text):
     prompt = (
         f"Please review the following presentation content and identify the main theme. "
@@ -193,43 +198,100 @@ def identify_theme_and_suggest_palette(full_text):
 
     return theme, color_names_hex, palette_description, color_usage
 
-# Descripción de imágenes en las diapositivas
-def describe_images_in_ppt(slides_content):
-    # Dummy function to simulate image descriptions
-    image_descriptions = [["Sample description for image"] * len(images) for text, images in slides_content]
+# Función para extraer paletas de colores de imágenes
+def extract_palette(image):
+    image_data = convert_image_to_jpeg(image)
+    color_thief = ColorThief(io.BytesIO(image_data))
+    palette = color_thief.get_palette(color_count=6)
+    return palette
+
+# Función para convertir la imagen a un formato compatible (JPEG)
+def convert_image_to_jpeg(image):
+    with io.BytesIO() as output:
+        image.convert("RGB").save(output, format="JPEG")
+        return output.getvalue()
+
+# Función para codificar la imagen en base64
+def encode_image(image_data):
+    return base64.b64encode(image_data).decode('utf-8')
+
+# Función para obtener descripciones de imágenes usando OpenAI
+def get_image_descriptions(image_data):
+    encoded_image = encode_image(image_data)
+    prompt = f"Analyze the following image and describe its content in detail: data:image/jpeg;base64,{encoded_image}"
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=500,
+        temperature=0.5,
+    )
+    description = response.choices[0].message['content'].strip()
+    return description
+
+# Función para extraer paletas y descripciones de imágenes de las diapositivas
+def extract_palettes_for_slides(slides_content):
+    image_descriptions = []
+    for _, images in slides_content:
+        slide_descriptions = []
+        for img, image_stream in images:
+            image_data = image_stream.getvalue()
+            description = get_image_descriptions(image_data)
+            slide_descriptions.append(description)
+        image_descriptions.append(slide_descriptions)
     return image_descriptions
 
-# Generación de sugerencias para cada diapositiva
+# Función para comparar paletas de colores
+def compare_palettes(palette, suggested_colors):
+    palette_colors = [f'#{r:02x}{g:02x}{b:02x}' for r, g, b in palette]
+    return any(color in suggested_colors for color in palette_colors)
+
+# Función para obtener sugerencias para cada diapositiva
+def get_suggestions(slide_content, num_images, theme, suggested_colors, palette_description, color_usage, image_descriptions):
+    prompt = (
+        f"Review the slide content and provide suggestions:\n"
+        f"Slide Content: {slide_content}\n"
+        f"Number of Images: {num_images}\n"
+        f"Theme: {theme}\n"
+        f"Suggested Colors: {', '.join(suggested_colors)}\n"
+        f"Palette Description: {palette_description}\n"
+        f"Color Usage: {color_usage}\n"
+        f"Image Descriptions: {image_descriptions}\n"
+    )
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=500,
+        temperature=0.5,
+    )
+    suggestions = response.choices[0].message['content'].strip()
+    return suggestions
+
+# Función para obtener sugerencias y comparar paletas para cada diapositiva
 def get_suggestions_per_slide(slides_content, theme, color_names_hex, palette_description, color_usage, image_descriptions):
     suggestions = []
     palette_comparison_results = []
     for i, (text, images) in enumerate(slides_content):
-        prompt = (
-            f"Please review the following slide content and provide suggestions:\n\n"
-            f"{text}\n\n"
-            f"The slide contains {len(images)} image(s). "
-            f"The overall theme of the presentation is '{theme}', and the suggested color palette for this theme is as follows:\n"
-            f"Palette Description: {palette_description}\n"
-            f"Suggested Colors (Names and Hex): {color_names_hex}\n"
-            f"Color Usage: {color_usage}\n\n"
-            f"Image Descriptions: {image_descriptions[i]}\n\n"
-            f"Based on the content of the slide and the image descriptions, provide suggestions on whether the images are appropriate, and if not, suggest more suitable images. "
-            f"Also, provide any additional suggestions to enhance the overall effectiveness of the slide."
-        )
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=500,
-            temperature=0.5,
-        )
-        suggestion = response.choices[0].message['content'].strip()
+        image_descs = "\n".join(image_descriptions[i])
+        suggestion = get_suggestions(text, len(images), theme, color_names_hex, palette_description, color_usage, image_descs)
         suggestions.append(suggestion)
 
-        # Simulate palette comparison results
-        palette_comparison_results.append("Good" if i % 2 == 0 else "Needs Improvement")
+        current_palettes = []
+        for img, _ in images:
+            palette = extract_palette(img)
+            current_palettes.append(palette)
+            print(f"Image Palette: {palette}")
+
+        is_palette_good = any(compare_palettes(palette, color_names_hex) for palette in current_palettes)
+        if is_palette_good:
+            palette_comparison_results.append("Good")
+        else:
+            palette_comparison_results.append("Needs Improvement")
 
     return suggestions, palette_comparison_results
 

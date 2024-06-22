@@ -5,3 +5,7 @@ pip install -r requirements.txt
 Posterior pyedes iniciar el proyecto con 
 
 python app.py
+
+variable de entorno 
+
+ .\venv\Scripts\activate     
